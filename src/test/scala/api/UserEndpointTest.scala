@@ -1,24 +1,64 @@
 package api
 
 import akka.actor.ActorDSL._
-import core.UserActor.{CreateUser, GetUser, GetUserResult}
-import core.model.User
-import org.scalatest.{MustMatchers, OptionValues, WordSpecLike}
+import com.softwaremill.macwire.tagging.Tagger
+import core.UserActor._
+import core.UserTag
+import core.model.{UserDeleted, PageParams, User, UserCreated}
 import spray.http.StatusCodes
-import spray.testkit.ScalatestRouteTest
 
-class UserEndpointTest extends WordSpecLike with MustMatchers with ScalatestRouteTest with OptionValues
-with UserDirectivesAndProtocol {
+class UserEndpointTest extends BaseApiTest {
 
   "UserEndpoint" should {
 
-    "return OK when getting user" in {
+    "return OK when getting list of users" in {
       // given
       val userActor = actor(new Act {
         become {
-          case GetUser("user@email.com") => sender() ! Right(GetUserResult(User("user@email.com", "pass")))
+          case GetUsers(PageParams(Some(2), Some(1))) =>
+            sender() ! GetUsersResult(List(User("user@email.com", "pass")))
         }
-      })
+      }).taggedWith[UserTag]
+
+      val userEndpoint = new UserEndpoint(userActor)
+
+      // when
+      Get("/users?skip=2&limit=1") ~> userEndpoint.route ~> check {
+
+        // then
+        status mustBe StatusCodes.OK
+        responseAs[List[User]] must have size 1
+      }
+    }
+
+    "return Created when user successfully created" in {
+      // given
+      val userActor = actor(new Act {
+        become {
+          case CreateUser(User("user@email.com", "pass")) =>
+            sender() ! UserCreated("user@email.com")
+        }
+      }).taggedWith[UserTag]
+
+      val userEndpoint = new UserEndpoint(userActor)
+
+      // when
+      Post("/users", User("user@email.com", "pass")) ~> userEndpoint.route ~> check {
+
+        // then
+        status mustBe StatusCodes.Created
+        responseAs[String] must include("user@email.com")
+      }
+    }
+
+    "return OK when getting single user" in {
+      // given
+      val userActor = actor(new Act {
+        become {
+          case GetUser("user@email.com") =>
+            sender() ! GetUserResult(User("user@email.com", "pass"))
+        }
+      }).taggedWith[UserTag]
 
       val userEndpoint = new UserEndpoint(userActor)
 
@@ -31,23 +71,24 @@ with UserDirectivesAndProtocol {
       }
     }
 
-    "return Created when user successfully created" in {
-//      // given
-//      val userActor = actor(new Act {
-//        become {
-//          case CreateUser("user@email.com") => sender() ! Right(GetUserResult(User("user@email.com", "pass")))
-//        }
-//      })
-//
-//      val userEndpoint = new UserEndpoint(userActor)
-//
-//      // when
-//      Get("/users/user@email.com") ~> userEndpoint.route ~> check {
-//
-//        // then
-//        status mustBe StatusCodes.OK
-//        responseAs[String] must include("user@email.com")
-//      }
+    "return No Content when deleting user" in {
+      // given
+      val userActor = actor(new Act {
+        become {
+          case DeleteUser("user@email.com") =>
+            sender() ! UserDeleted
+        }
+      }).taggedWith[UserTag]
+
+      val userEndpoint = new UserEndpoint(userActor)
+
+      // when
+      Delete("/users/user@email.com") ~> userEndpoint.route ~> check {
+
+        // then
+        status mustBe StatusCodes.NoContent
+        responseAs[String] mustBe empty
+      }
     }
 
   }

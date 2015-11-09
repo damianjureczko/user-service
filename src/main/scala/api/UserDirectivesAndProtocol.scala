@@ -1,6 +1,5 @@
 package api
 
-import core.UserActor.{GetUserResult, GetUsersResult}
 import core.model._
 import spray.http.StatusCodes._
 import spray.http.{MediaTypes, StatusCode, StatusCodes}
@@ -9,19 +8,14 @@ import spray.httpx.marshalling.ToResponseMarshaller
 import spray.json._
 import spray.routing._
 
+/**
+ * Set of directives and protocols used by user service.
+ */
 trait UserDirectivesAndProtocol extends Directives with DefaultJsonProtocol with SprayJsonSupport {
 
   def pageParams: Directive1[PageParams] = parameter(('skip.as[Int].?, 'limit.as[Int].?)).as(PageParams)
 
   implicit val userJsonFormat = jsonFormat2(User)
-
-  implicit val userResultJsonFormat = new RootJsonWriter[GetUserResult] {
-    override def write(obj: GetUserResult): JsValue = obj.user.toJson
-  }
-
-  implicit val usersResultJsonFormat = new RootJsonWriter[GetUsersResult] {
-    override def write(obj: GetUsersResult): JsValue = obj.users.toJson
-  }
 
   private def successToResponse: PartialFunction[OperationSuccess, (StatusCode, String)] = {
     case UserCreated(email) =>
@@ -52,6 +46,5 @@ trait UserDirectivesAndProtocol extends Directives with DefaultJsonProtocol with
 
   def completeWithInternalServerError(ex: Throwable): Route =
     complete(InternalServerError -> errorBody(ex.getMessage))
-
 
 }

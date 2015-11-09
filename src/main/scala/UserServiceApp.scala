@@ -1,7 +1,8 @@
 import akka.actor.ActorSystem
 import akka.io.IO
 import api.UserServiceActor
-import core.{MainConfig, UserActor}
+import com.softwaremill.macwire.tagging.Tagger
+import core.{UserTag, MainConfig, UserActor}
 import spray.can.Http
 import repository.InMemoryUserRepository
 
@@ -14,7 +15,7 @@ object UserServiceApp extends App with MainConfig {
 
   import system.dispatcher
 
-  val userActor = system.actorOf(UserActor.props(new InMemoryUserRepository), "repository")
+  val userActor = system.actorOf(UserActor.props(new InMemoryUserRepository), "repository").taggedWith[UserTag]
 
   val service = system.actorOf(UserServiceActor.props(userActor), "user-service")
 
