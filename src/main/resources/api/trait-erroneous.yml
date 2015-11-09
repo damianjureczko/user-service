@@ -1,0 +1,10 @@
+erroneous:
+  usage: |
+    apply this to method that can fail with internal server error
+  responses:
+    500:
+      description:  |
+        An error occurred.
+      body:
+        application/json:
+          schema: error

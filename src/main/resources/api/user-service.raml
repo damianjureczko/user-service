@@ -1,0 +1,92 @@
+#%RAML 0.8
+---
+title: User Service
+version: v0.1
+baseUri: http://userservice.clodyna.org
+mediaType: application/json
+
+schemas:
+  - error: !include schema-error.json
+  - user: !include schema-user.json
+    
+traits:
+  - !include trait-erroneous.yml
+  - !include trait-list.yml
+
+/users:
+  get:
+    is: [erroneous, list]
+    description: Returns a list of users.
+    responses: 
+      200:
+        description: List of users was returned successfully
+        body:
+          application/json:
+            example: !include example-user-list.json
+  post:
+    is: [erroneous]
+    description: Creates new user.
+    body:
+      application/json:
+        schema: user
+        example: !include example-user.json
+    responses:
+      201:
+        description: User was created successfully.
+        headers:
+          Location:
+            description: URI of created wishlist.
+      409:
+        description: User with given ID already exists.
+        body:
+          application/json:
+            schema: error          
+  /{email}:
+    uriParameters:
+      email:
+        description:
+          Uniquely identifies user.
+    get:
+      is: [erroneous]
+      description: Returns a user with given email.
+      responses:
+        200:
+          description: User was returned successfully.
+          body:
+            application/json:
+              schema: user
+              example: !include example-user.json
+        404:
+          description: User with given ID was not found.
+          body:
+            application/json:
+              schema: error
+    delete:
+      is: [erroneous]
+      description: Deletes user with given ID.
+      responses:
+        204:
+          description: User was deleted successfully.
+        404:
+          description: User with given ID was not found.
+          body:
+            application/json:
+              schema: error
+/login:
+  post:
+    is: [erroneous]
+    queryParameters:
+      email: 
+        description: Email of user to be authorized.
+      password:
+        description: Password of user to be authorized.
+    responses:
+      200:
+        description: User authorized.
+      401:
+        description: User not authorized.
+        body:
+          application/json:
+            schema: error
+    
+              

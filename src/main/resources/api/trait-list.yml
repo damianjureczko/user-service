@@ -1,0 +1,14 @@
+list:
+  usage: |
+    apply this to method that can fail with internal server error
+  queryParameters:
+    skip:
+      description: Number of elements to skip from the begining
+      type: integer
+      minimum: 1
+      default: 1
+    limit:
+      description: Number of elements to return.
+      type: integer
+      minimum: 1
+      default: 10
