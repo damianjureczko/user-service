@@ -13,7 +13,7 @@ import spray.routing._
  */
 trait UserDirectivesAndProtocol extends Directives with DefaultJsonProtocol with SprayJsonSupport {
 
-  def pageParams: Directive1[PageParams] = parameter(('skip.as[Int].?, 'limit.as[Int].?)).as(PageParams)
+  def pageParams: Directive1[PageParams] = parameter('skip.as[Int].?, 'limit.as[Int].?).as(PageParams)
 
   implicit val userJsonFormat = jsonFormat2(User)
 
