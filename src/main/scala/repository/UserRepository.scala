@@ -23,7 +23,7 @@ trait UserRepository {
    * Fails with UserConflictException is user already exists.
    *
    * @param user a new user to create
-   * @return future with created user if operation succeed
+   * @return future with confirmation that operation succeed
    */
   def createUser(user: User): Future[UserCreated]
 
@@ -40,7 +40,7 @@ trait UserRepository {
    * Removes user with given email
    *
    * @param email an email of user to be deleted
-   * @return future with true if operation succeed
+   * @return future with confirmation that operation succeed
    */
   def deleteUser(email: String): Future[UserDeleted.type]
 }
