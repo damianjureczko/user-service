@@ -1,6 +1,8 @@
 package api
 
 import akka.actor._
+import com.softwaremill.macwire.tagging.@@
+import core.UserTag
 import spray.http.MediaTypes._
 import spray.routing._
 
@@ -8,7 +10,7 @@ import scala.concurrent.ExecutionContext
 
 object UserServiceActor {
 
-  def props(userActor: ActorRef) = Props(new UserServiceActor(userActor))
+  def props(userActor: ActorRef @@ UserTag) = Props(new UserServiceActor(userActor))
 }
 
 /**
@@ -16,7 +18,7 @@ object UserServiceActor {
  *
  * @param userActor global actor handling user related requests
  */
-class UserServiceActor(userActor: ActorRef) extends Actor with UserServiceApi {
+class UserServiceActor(userActor: ActorRef @@ UserTag) extends Actor with UserServiceApi {
 
   import context.dispatcher
 
@@ -30,7 +32,7 @@ class UserServiceActor(userActor: ActorRef) extends Actor with UserServiceApi {
  */
 trait UserServiceApi extends HttpService {
 
-  def route(userActor: ActorRef)(implicit executionContext: ExecutionContext) =
+  def route(userActor: ActorRef @@ UserTag)(implicit executionContext: ExecutionContext) =
     respondWithMediaType(`application/json`) {
       new UserEndpoint(userActor).route
     }

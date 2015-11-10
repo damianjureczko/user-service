@@ -2,7 +2,9 @@ package api
 
 import akka.actor.ActorRef
 import akka.pattern.ask
+import com.softwaremill.macwire.tagging.@@
 import core.UserActor._
+import core.UserTag
 import core.model.{OperationError, User, UserCreated, UserDeleted}
 import spray.http.HttpHeaders.Location
 
@@ -15,7 +17,7 @@ import scala.util.{Failure, Success}
  * @param userActor global actor handling user related requests
  * @param executionContext execution context to run asynchronous operation
  */
-class UserEndpoint(userActor: ActorRef)(implicit executionContext: ExecutionContext)
+class UserEndpoint(userActor: ActorRef @@ UserTag)(implicit executionContext: ExecutionContext)
   extends UserDirectivesAndProtocol with EndpointTimeOut {
 
   val route =
