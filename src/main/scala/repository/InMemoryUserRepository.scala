@@ -4,11 +4,16 @@ import core.model.{User, UserCreated, UserDeleted}
 
 import scala.concurrent.{ExecutionContext, Future, Promise}
 
+/**
+ * "In memory" implementation of UserRepository trait, only for purpose of demonstration.
+ *
+ * @param ec execution context to run asynchronous operation
+ */
 class InMemoryUserRepository(implicit ec: ExecutionContext) extends UserRepository {
 
   private var users: Map[String, User] = Map()
 
-  val BannedEmails = """^.*@banned.com$""".r
+  val ErrorEmails = """^.*@error.com$""".r
 
   implicit val usersOrder = Ordering.by[(String, User), String](_._1)
 
@@ -23,12 +28,12 @@ class InMemoryUserRepository(implicit ec: ExecutionContext) extends UserReposito
     val result = Promise[UserCreated]()
 
     user.email match {
-      case BannedEmails(_*) =>
-        result.failure(new RepositoryException("banned email"))
+      case ErrorEmails(_*) =>
+        result.failure(new RepositoryException(s"Error creating user with email '${user.email}'"))
       case _ =>
         users.contains(user.email) match {
           case true =>
-            result.failure(new UserConflictException("user with given email already exists"))
+            result.failure(new UserConflictException(s"User with email '${user.email}' already exists"))
           case false =>
             users += user.email -> user
             result.success(UserCreated(user.email))

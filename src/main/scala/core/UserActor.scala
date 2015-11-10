@@ -9,6 +9,9 @@ import scala.util.{Failure, Success}
 
 trait UserTag
 
+/**
+ * Contains protocol for UserActor.
+ */
 object UserActor {
 
   case class GetUsers(page: PageParams)
@@ -27,6 +30,11 @@ object UserActor {
 
 }
 
+/**
+ * Handles all user related operations.
+ *
+ * @param userRepository repository for CRUD on users
+ */
 class UserActor(userRepository: UserRepository) extends Actor with ActorLogging with ActorTimeout {
 
   import context.dispatcher

@@ -53,5 +53,4 @@ trait UserDirectivesAndProtocol extends Directives with DefaultJsonProtocol with
   def completeWithInternalServerError(ex: Throwable): Route =
     complete(InternalServerError -> errorBody(ex.getMessage))
 
-
 }

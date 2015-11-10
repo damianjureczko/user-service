@@ -14,7 +14,7 @@ package api
 import akka.util.Timeout
 
 /**
- * 
+ * Timeout for asynchronous operation within endpoint.
  */
 trait EndpointTimeOut {
 

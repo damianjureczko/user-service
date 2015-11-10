@@ -12,7 +12,7 @@
 package repository
 
 /**
- * Exception thrown when uniqueness of ID was violated.
+ * Exception thrown when user with given email already exists.
  *
  * @param msg details of exception
  */

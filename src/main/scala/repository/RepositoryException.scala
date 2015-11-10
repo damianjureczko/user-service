@@ -12,7 +12,7 @@
 package repository
 
 /**
- * Exception thrown when Mongo could not execute command.
+ * Generic repository exception.
  *
  * @param msg message with information about exception
  */

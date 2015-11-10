@@ -4,12 +4,16 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import core.UserActor._
 import core.model.{OperationError, User, UserCreated, UserDeleted}
-import spray.httpx.marshalling.ToResponseMarshallable
-import spray.routing.Route
 
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
+/**
+ * Endpoint to handle request to /users/... path.
+ *
+ * @param userActor global actor handling user related requests
+ * @param executionContext execution context to run asynchronous operation
+ */
 class UserEndpoint(userActor: ActorRef)(implicit executionContext: ExecutionContext)
   extends UserDirectivesAndProtocol with EndpointTimeOut {
 
@@ -54,13 +58,4 @@ class UserEndpoint(userActor: ActorRef)(implicit executionContext: ExecutionCont
             }
           }
       }
-
-  private def handleResponse[T <: ToResponseMarshallable](res: Try[T]): Route = {
-    res match {
-      case Success(result) =>
-        complete(result)
-      case Failure(ex) =>
-        completeWithInternalServerError(ex)
-    }
-  }
 }
