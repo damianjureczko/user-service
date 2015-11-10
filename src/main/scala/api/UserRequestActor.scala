@@ -25,10 +25,10 @@ class UserRequestActor(requestContext: RequestContext, userActor: ActorRef) exte
 
     case msg =>
       userActor ! msg
-      context become comp
+      context become waitingForResponse
   }
 
-  private def comp: Receive = {
+  private def waitingForResponse: Receive = {
 
     case GetUserResult(user) =>
       requestContext.complete(user)

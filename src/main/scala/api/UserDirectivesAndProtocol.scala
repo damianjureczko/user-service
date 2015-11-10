@@ -39,10 +39,10 @@ trait UserDirectivesAndProtocol extends Directives with DefaultJsonProtocol with
       StatusCodes.NotFound -> errorBody(message)
   }
 
-  private def errorBody(message: String): String = s""" { "errorMessage" : "$message" } """
-
   implicit val errorMarshaller =
     ToResponseMarshaller.delegate[OperationError, (StatusCode, String)](MediaTypes.`application/json`)(errorToResponse)
+
+  private def errorBody(message: String): String = s""" { "errorMessage" : "$message" } """
 
   def completeWithInternalServerError(ex: Throwable): Route =
     complete(InternalServerError -> errorBody(ex.getMessage))
