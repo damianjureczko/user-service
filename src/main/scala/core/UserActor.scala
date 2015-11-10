@@ -74,7 +74,6 @@ class UserActor(userRepository: UserRepository) extends Actor with ActorLogging 
       userRepository.deleteUser(email) recover {
         case ex: Throwable =>
           ServiceInternalError(s"Error deleting user with email $email")
-
-      }
+      } pipeTo sender()
   }
 }
