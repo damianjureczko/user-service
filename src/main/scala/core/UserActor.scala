@@ -13,11 +13,11 @@ trait UserTag
  */
 object UserActor {
 
+  case class CreateUser(user: User)
+
   case class GetUsers(page: PageParams)
 
   case class GetUsersResult(users: List[User])
-
-  case class CreateUser(user: User)
 
   case class GetUser(email: String)
 

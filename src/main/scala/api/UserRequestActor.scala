@@ -1,14 +1,16 @@
 package api
 
 import akka.actor.{Actor, ActorLogging, ActorRef, Props}
+import com.softwaremill.macwire.tagging.@@
 import core.UserActor.{GetUserResult, GetUsersResult}
+import core.UserTag
 import core.model.{OperationError, OperationSuccess, ServiceInternalError, UserCreated}
 import spray.http.HttpHeaders.Location
 import spray.routing.RequestContext
 
 object UserRequestActor {
 
-  def props(requestContext: RequestContext, userActor: ActorRef) = Props(new UserRequestActor(requestContext, userActor))
+  def props(requestContext: RequestContext, userActor: ActorRef @@ UserTag) = Props(new UserRequestActor(requestContext, userActor))
 }
 
 /**
@@ -17,7 +19,7 @@ object UserRequestActor {
  * @param requestContext context of a request
  * @param userActor global actor handling user related requests
  */
-class UserRequestActor(requestContext: RequestContext, userActor: ActorRef) extends Actor with UserDirectivesAndProtocol with ActorLogging {
+class UserRequestActor(requestContext: RequestContext, userActor: ActorRef @@ UserTag) extends Actor with UserDirectivesAndProtocol with ActorLogging {
 
   override def receive: Receive = default
 
