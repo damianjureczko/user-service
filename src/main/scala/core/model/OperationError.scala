@@ -2,6 +2,7 @@ package core.model
 
 /**
  * Base class for all errors which might happen in the application and be returned from actors.
+ *
  * @param message details about error
  */
 sealed abstract class OperationError(message: String) {
