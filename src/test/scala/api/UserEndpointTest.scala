@@ -48,6 +48,7 @@ class UserEndpointTest extends BaseApiTest {
         // then
         status mustBe StatusCodes.Created
         responseAs[String] must include("user@email.com")
+        header("Location").value.value must endWith ("/users/user@email.com")
       }
     }
 

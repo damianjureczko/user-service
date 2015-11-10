@@ -1,8 +1,9 @@
 package api
 
-import akka.actor.{Actor, ActorRef, Props}
+import akka.actor.{Actor, ActorLogging, ActorRef, Props}
 import core.UserActor.{GetUserResult, GetUsersResult}
-import core.model.{OperationError, OperationSuccess, ServiceInternalError}
+import core.model.{OperationError, OperationSuccess, ServiceInternalError, UserCreated}
+import spray.http.HttpHeaders.Location
 import spray.routing.RequestContext
 
 object UserRequestActor {
@@ -16,7 +17,7 @@ object UserRequestActor {
  * @param requestContext context of a request
  * @param userActor global actor handling user related requests
  */
-class UserRequestActor(requestContext: RequestContext, userActor: ActorRef) extends Actor with UserDirectivesAndProtocol {
+class UserRequestActor(requestContext: RequestContext, userActor: ActorRef) extends Actor with UserDirectivesAndProtocol with ActorLogging {
 
   override def receive: Receive = default
 
@@ -35,6 +36,13 @@ class UserRequestActor(requestContext: RequestContext, userActor: ActorRef) exte
 
     case GetUsersResult(users) =>
       requestContext.complete(users)
+      context stop self
+
+    case result: UserCreated =>
+      val uri = requestContext.request.uri
+      requestContext
+        .withHttpResponseHeadersMapped(Location(s"${uri.scheme}:${uri.authority}/users/${result.email}") :: _)
+        .complete(result)
       context stop self
 
     case success: OperationSuccess =>
