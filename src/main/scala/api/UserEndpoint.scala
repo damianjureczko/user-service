@@ -4,6 +4,7 @@ import akka.actor.ActorRef
 import akka.pattern.ask
 import core.UserActor._
 import core.model.{OperationError, User, UserCreated, UserDeleted}
+import spray.http.HttpHeaders.Location
 
 import scala.concurrent.ExecutionContext
 import scala.util.{Failure, Success}
@@ -30,12 +31,18 @@ class UserEndpoint(userActor: ActorRef)(implicit executionContext: ExecutionCont
         }
       } ~
         post {
-          entity(as[User]) { user =>
-            onComplete((userActor ? CreateUser(user)).mapTo[Either[OperationError, UserCreated]]) {
-              case Success(result) =>
-                complete(result)
-              case Failure(ex) =>
-                completeWithInternalServerError(ex)
+          requestUri { uri =>
+            entity(as[User]) { user =>
+              onComplete((userActor ? CreateUser(user)).mapTo[Either[OperationError, UserCreated]]) {
+                case Success(Right(result)) =>
+                  respondWithHeader(Location(s"${uri.scheme}:${uri.authority}/users/${user.email}")) {
+                    complete(result)
+                  }
+                case Success(Left(problem)) =>
+                  complete(problem)
+                case Failure(ex) =>
+                  completeWithInternalServerError(ex)
+              }
             }
           }
         }
