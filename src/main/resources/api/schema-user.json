@@ -1,7 +1,7 @@
 {
   "$schema": "http://json-schema.org/draft-04/schema#",
-  "title" : "wishlist",
-  "description" : "schema of wishlist",
+  "title" : "user",
+  "description" : "schema of user",
   "type" : "object",
   "properties" : {
     "email" : {

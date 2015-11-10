@@ -35,9 +35,15 @@ traits:
         description: User was created successfully.
         headers:
           Location:
-            description: URI of created wishlist.
+            description: URI of created user.
+        body:
+          application/json:
+            example: |
+              {
+                "test.user@user-service.com" : "created"
+              }
       409:
-        description: User with given ID already exists.
+        description: User with given email already exists.
         body:
           application/json:
             schema: error          
@@ -57,36 +63,13 @@ traits:
               schema: user
               example: !include example-user.json
         404:
-          description: User with given ID was not found.
+          description: User with given email was not found.
           body:
             application/json:
               schema: error
     delete:
       is: [erroneous]
-      description: Deletes user with given ID.
+      description: Deletes user with given email.
       responses:
         204:
           description: User was deleted successfully.
-        404:
-          description: User with given ID was not found.
-          body:
-            application/json:
-              schema: error
-/login:
-  post:
-    is: [erroneous]
-    queryParameters:
-      email: 
-        description: Email of user to be authorized.
-      password:
-        description: Password of user to be authorized.
-    responses:
-      200:
-        description: User authorized.
-      401:
-        description: User not authorized.
-        body:
-          application/json:
-            schema: error
-    
-              

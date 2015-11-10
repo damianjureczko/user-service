@@ -1,10 +1,10 @@
 [
   {
-    "email" : "johnny.bravo@cloudyna.org",
-    "password" : "chicks"
+    "email" : "test.user@user-servcie.com",
+    "password" : "lovescala"
   },
   {
-    "email" : "yogi.bear@cloudyna.org",
-    "password" : "basket"
+    "email" : "another.user@user-service.com",
+    "password" : "loveakka"
   }
 ]
