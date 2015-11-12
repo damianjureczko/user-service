@@ -5,8 +5,8 @@ list:
     skip:
       description: Number of elements to skip from the begining
       type: integer
-      minimum: 1
-      default: 1
+      minimum: "0"
+      default: "0"
     limit:
       description: Number of elements to return.
       type: integer
